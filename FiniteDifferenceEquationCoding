@@ -1,0 +1,62 @@
+% Brusselator
+clc;
+clear all; % Clears command window and saved variables
+h = 0.01;
+tmax = 15;% Set time-step and maximum time
+nsteps = round(tmax/h); % This works out how long the vectors should be
+t = zeros(1,nsteps);
+x = zeros(1,nsteps);
+y = zeros(1,nsteps);
+% Set the initial condition in the first entry of the solution
+t(1) = 0; % This is the first value of t
+x(1) = 0; % This is the first value of x
+y(1) = 1; % This is the first value of y
+A = 2; %Value of A
+B = 6; %Value of B
+F_xy = @(x,y) A - (B*x) + (y*(x^2)) - x; %Function F(t,x,y)
+G_xy = @(x,y) (B*x) - ((x^2)*y); %Function G(t,x,y)
+% Iterate
+for i = 2:nsteps
+ %use the RK4 algorithm
+ m_1 = h*F_xy(x(i-1) , y(i-1));
+ n_1 = h*G_xy(x(i-1) , y(i-1));
+
+ m_2 = h*F_xy(x(i-1) + 0.5*m_1 , y(i-1)+ 0.5*n_1);
+ n_2 = h*G_xy(x(i-1)+ 0.5*m_1 , y(i-1)+ 0.5*n_1);
+
+ m_3 = h*F_xy(x(i-1)+ 0.5*m_2 , y(i-1)+ 0.5*n_2);
+ n_3 = h*G_xy(x(i-1)+ 0.5*m_2 , y(i-1)+ 0.5*n_2);
+
+ m_4 = h*F_xy(x(i-1)+ m_3 , y(i-1)+ n_3);
+ n_4 = h*G_xy(x(i-1)+ m_3 , y(i-1)+ n_3);
+
+ x(i) = x(i-1) + (m_1 + 2*m_2 + 2*m_3 + m_4)*(1/6);
+ y(i) = y(i-1) + (n_1 + 2*n_2 + 2*n_3 + n_4)*(1/6);
+ t(i) = t(i-1) + h;
+ %Update
+end
+% plot graph
+plot(x,y, 'DisplayName','x against y')
+% Give the graph a title
+title('Phase plane (x,y)')
+% Label the x-axis
+xlabel('x(t), x-axis')
+% Label the y-axis
+ylabel('y(t), y-axis')
+% Add a grid to the graph
+grid on
+% Turns the legend on
+legend('show')
+% Plot a new graph
+figure
+%plotting both x(t) and y(t) to make it easy to compare
+yyaxis left
+plot(t,x,'DisplayName', 'x(t)')
+title('time dependent graph for x(t) and y(t)')
+xlabel('t, x-axis')
+ylabel('x(t)')
+yyaxis right
+plot(t,y, 'DisplayName', 'y(t)')
+ylabel('y(t)')
+grid on
+legend('show')
